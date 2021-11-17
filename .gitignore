@@ -1,0 +1,9 @@
+*
+!.gitignore
+!*.vhd
+!rtl/proj_quartus/*
+!*.qsf
+!*.qpf
+!*.pdf
+!img/*
+!*/
