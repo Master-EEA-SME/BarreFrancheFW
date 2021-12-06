@@ -28,7 +28,8 @@ architecture rtl of SpiMaster is
     signal s_Miso : std_logic;
     signal s_BitCnt : std_logic_vector(7 downto 0);
     signal s_ShiftEn : std_logic;
-    signal s_TxDat, s_RxDat : std_logic_vector(7 downto 0)
+    signal s_TxDat, s_RxDat : std_logic_vector(7 downto 0);
+    signal s_RxVld : std_logic;
 begin
     -- Rendre synchrone Miso
     process (Clk_i)
@@ -66,7 +67,9 @@ begin
     begin
         if ARst_i = '1' then
             s_BitCnt <= x"01";
+            s_RxVld <= '0';
         elsif rising_edge(Clk_i) then
+            s_RxVld <= '0';
             if Trg_i = '1' then
                 s_TxDat <= TxDat_i;
             end if;
@@ -81,6 +84,7 @@ begin
                     s_RxDat <= s_RxDat(6 downto 0) & s_Miso;
                     s_BitCnt <= s_BitCnt(6 downto 0) & '0';
                     if s_BitCnt(7) = '1' then
+                        s_RxVld <= '1';
                         s_Transfer <= '0';
                     end if;
                 end if;
@@ -92,6 +96,8 @@ begin
             end if;
         end if;
     end process;
+    RxDat_o <= s_RxDat;
+    RxVld_o <= s_RxVld;
     Sck_o <= s_Sck;
     Mosi_o <= s_TxDat(7);
 end architecture rtl;

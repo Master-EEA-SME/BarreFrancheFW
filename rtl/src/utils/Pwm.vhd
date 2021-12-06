@@ -24,12 +24,12 @@ begin
     process (Clk_i, ARst_i)
     begin
         if ARst_i = '1' then
-            s_FreqCnt <= (others => '0');
+            s_FreqCnt <= '0' & Freq_i;
         elsif rising_edge(Clk_i) then
             if En_i = '1' then
                 s_FreqCnt <= ('0' & s_FreqCnt(s_FreqCnt'left - 1 downto 0)) + ('0' & Freq_i);
             else
-                s_FreqCnt <= (others => '0');
+                s_FreqCnt <= '0' & Freq_i;
             end if;
         end if;
     end process;
