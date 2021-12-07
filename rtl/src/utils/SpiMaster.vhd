@@ -42,18 +42,18 @@ begin
     process (Clk_i, ARst_i)
     begin
         if ARst_i = '1' then
-            s_FreqCnt <= '0' & Freq_i;
+            s_FreqCnt <= unsigned('0' & Freq_i);
         elsif rising_edge(Clk_i) then
             if SRst_i = '1' then
-                s_FreqCnt <= '0' & Freq_i;
+                s_FreqCnt <= unsigned('0' & Freq_i);
             else
                 if s_Transfer = '1' then
-                    s_FreqCnt <= ('0' & s_FreqCnt(15 downto 0)) + ('0' & Freq_i);
+                    s_FreqCnt <= ('0' & s_FreqCnt(15 downto 0)) + unsigned('0' & Freq_i);
                     if s_FreqCnt(16) = '1' then
                         s_Sck <= not s_Sck;
                     end if;
                 else
-                    s_FreqCnt <= '0' & Freq_i;
+                    s_FreqCnt <= unsigned('0' & Freq_i);
                     s_Sck <= '0';
                 end if;
             end if;

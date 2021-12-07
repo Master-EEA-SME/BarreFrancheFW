@@ -24,12 +24,12 @@ begin
     process (Clk_i, ARst_i)
     begin
         if ARst_i = '1' then
-            s_FreqCnt <= '0' & Freq_i;
+            s_FreqCnt <= unsigned('0' & Freq_i);
         elsif rising_edge(Clk_i) then
             if En_i = '1' then
-                s_FreqCnt <= ('0' & s_FreqCnt(s_FreqCnt'left - 1 downto 0)) + ('0' & Freq_i);
+                s_FreqCnt <= ('0' & s_FreqCnt(s_FreqCnt'left - 1 downto 0)) + unsigned(('0' & Freq_i));
             else
-                s_FreqCnt <= '0' & Freq_i;
+                s_FreqCnt <= unsigned('0' & Freq_i);
             end if;
         end if;
     end process;
@@ -43,7 +43,7 @@ begin
             Q <= '0';
         elsif rising_edge(Clk_i) then
             if En_i = '1' then
-                if s_FreqCnt(s_FreqCnt'left - 1 downto 0) < Duty_i then
+                if s_FreqCnt(s_FreqCnt'left - 1 downto 0) < unsigned(Duty_i) then
                     Q <= '1';
                 else
                     Q <= '0';

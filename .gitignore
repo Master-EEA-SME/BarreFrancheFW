@@ -6,4 +6,5 @@
 !*.qpf
 !*.pdf
 !img/*
+!Makefile
 !*/
