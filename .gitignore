@@ -7,4 +7,5 @@
 !*.pdf
 !img/*
 !Makefile
+!*.mpf
 !*/

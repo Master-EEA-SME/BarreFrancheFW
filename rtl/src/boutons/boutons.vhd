@@ -22,13 +22,15 @@ architecture rtl of boutons is
     signal s_btn_babord, s_btn_tribord, s_btn_stby : std_logic;
     signal s_dbtn_stby, s_btn_stby_re : std_logic;
     signal current_st : BOUTONS_ST;
+    signal s_end_tempo : std_logic;
+    signal s_end_bip : std_logic;
 begin
     process (clk_i)
     begin
         if rising_edge(clk_i) then
-            s_btn_babord <= btn_babord_n_i; 
-            s_btn_tribord <= btn_tribord_n_i; 
-            s_btn_stby <= btn_stby_n_i; 
+            s_btn_babord <= not btn_babord_n_i; 
+            s_btn_tribord <= not btn_tribord_n_i; 
+            s_btn_stby <= not btn_stby_n_i; 
             s_dbtn_stby <= s_btn_stby;
         end if;
     end process;
@@ -49,12 +51,38 @@ begin
                         current_st <= ST_TRIBORD;
                     end if;
                 when ST_BABORD =>
-                
+                    if s_btn_babord = '0' then
+                        current_st <= ST_IDLE;
+                    end if;
                 when ST_TRIBORD =>
-                    
+                    if s_btn_tribord = '0' then
+                        current_st <= ST_IDLE;
+                    end if;
+                when ST_AUTO =>
+                    if s_btn_stby_re = '1' then
+                        current_st <= ST_IDLE;
+                    elsif s_btn_babord = '1' then
+                        current_st <= ST_BABORD_APPUI;
+                    elsif s_btn_tribord = '1' then
+                        current_st <= ST_TRIBORD_APPUI;
+                    end if;
+                when ST_BABORD_APPUI =>
+                    if s_btn_babord = '1' and s_end_tempo = '1' then
+                        current_st <= ST_BABORD_10;
+                    elsif s_btn_babord = '0' then
+                        current_st <= ST_BABORD_1;
+                    end if;
+                when ST_TRIBORD_APPUI =>
+                    if s_btn_tribord = '1' and s_end_tempo = '1' then
+                        current_st <= ST_TRIBORD_10;
+                    elsif s_btn_tribord = '0' then
+                        current_st <= ST_TRIBORD_1;
+                    end if;
+                when ST_BABORD_1 | ST_BABORD_10 | ST_TRIBORD_1 | ST_TRIBORD_10 =>
+                    if s_end_bip = '1' then
+                        current_st <= ST_AUTO;
+                    end if;
                 when others =>
-                    
-            
             end case;
         end if;
     end process;

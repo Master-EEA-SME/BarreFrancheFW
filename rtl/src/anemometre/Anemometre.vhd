@@ -23,11 +23,11 @@ architecture rtl of Anemometre is
 begin
     s_PulseSRst <= not s_Running; -- On remet à 0 le générateur d'impulsions lorsque aucune mesure est en cours. 
     -- On instancie un générateur d'impulsions pour avoir une base d'une seconde
-    uPulse1Hz : entity work.Pulse 
+    u_pulse_1hz : entity work.Pulse 
         generic map (
             C_FREQ_IN => 50e6, C_FREQ_OUT  => 1) -- Pour la simulation, on mesurera Anemo_i sur 10us => C_FREQ_OUT = 100e3
         port map (
-            ARst_i  => ARst_i,  Clk_i   => Clk_i,   SRst_i  => s_Running,
+            ARst_i  => ARst_i,  Clk_i   => Clk_i,   SRst_i  => s_PulseSRst,
             En_i    => '1',     Q_o     => s_PulseQ);
 
     -- On instancie un détecteur de front montants / front descendant pour detecter un front montant
