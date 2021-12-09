@@ -29,8 +29,8 @@ architecture rtl of verin is
     signal s_pwm_en            : std_logic;
     signal s_adc_trg, s_adc_dv : std_logic;
     signal s_adc_dat           : std_logic_vector(11 downto 0);
-    signal s_adc_cooldown_cnt  : unsigned(8 downto 0);
-    signal s_adc_on_cooldown   : std_logic;
+    constant C_CNT_100MS_INCR  : unsigned(31 downto 0) := to_unsigned(integer(10.0 * 2.0 ** 32 / real(C_FREQ_IN)), 32);
+    signal s_cnt_100ms         : unsigned(32 downto 0);
 begin
     -- Gestion Pwm
     u_pwm : entity work.Pwm
@@ -41,9 +41,10 @@ begin
             En_i => s_pwm_en, Duty_i => pwm_duty_i, Freq_i => pwm_freq_i,
             Q => pwm_o);
     -- Gestion butées
-    s_pwm_en <= '0' when unsigned(s_adc_dat) >= unsigned(butee_d_i) and sens_i = '1' else
-                '0' when unsigned(s_adc_dat) <= unsigned(butee_d_i) and sens_i = '0' else
-                pwm_en_i;
+    s_pwm_en <=
+        '0' when unsigned(s_adc_dat) >= unsigned(butee_d_i) and sens_i = '1' else
+        '0' when unsigned(s_adc_dat) <= unsigned(butee_d_i) and sens_i = '0' else
+        pwm_en_i;
     sens_o <= sens_i;
 
     -- Gestion ADC
@@ -55,22 +56,34 @@ begin
             trg_i => s_adc_trg, dat_o => s_adc_dat, dv_o => s_adc_dv,
             sck_o => sck_o, miso_i => miso_i, cs_n_o => cs_n_o);
 
+--    process (clk_i, arst_i)
+--    begin
+--        if arst_i = '1' then
+--            s_adc_cooldown_cnt <= (others => '0');
+--            s_adc_on_cooldown  <= '0';
+--        elsif rising_edge(clk_i) then
+--            if s_adc_dv = '1' then
+--                s_adc_on_cooldown  <= '1';
+--                s_adc_cooldown_cnt <= (others => '0');
+--            end if;
+--            if s_adc_on_cooldown = '1' then
+--                s_adc_cooldown_cnt <= s_adc_cooldown_cnt + 1;
+--                if s_adc_cooldown_cnt(s_adc_cooldown_cnt'left) = '1' then
+--                    s_adc_on_cooldown <= '0';
+--                end if;
+--            end if;
+--        end if;
+--    end process;
+
     process (clk_i, arst_i)
     begin
         if arst_i = '1' then
-            s_adc_cooldown_cnt <= (others => '0');
-            s_adc_on_cooldown  <= '0';
+            s_cnt_100ms(31 downto 0) <= (others => '1');
+            s_cnt_100ms(32)          <= '0';
         elsif rising_edge(clk_i) then
-            if s_adc_dv = '1' then
-                s_adc_on_cooldown  <= '1';
-                s_adc_cooldown_cnt <= (others => '0');
-            end if;
-            if s_adc_on_cooldown = '1' then
-                s_adc_cooldown_cnt <= s_adc_cooldown_cnt + 1;
-                if s_adc_cooldown_cnt(s_adc_cooldown_cnt'left) = '1' then
-                    s_adc_on_cooldown <= '0';
-                end if;
-            end if;
+            s_cnt_100ms <= ('0' & s_cnt_100ms(31 downto 0)) & ('0' & C_CNT_100MS_INCR);
         end if;
     end process;
+    s_adc_trg <= s_cnt_100ms(32);
+    angle_barre_o <= s_adc_dat;
 end architecture rtl;

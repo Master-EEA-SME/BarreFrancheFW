@@ -27,6 +27,7 @@ architecture rtl of mcp3201 is
     signal s_busy      : std_logic;
     signal s_byte_cnt  : std_logic_vector(1 downto 0);
     signal s_dat       : std_logic_vector(15 downto 0);
+    signal s_acquiring : std_logic;
 begin
 
     u_spi_master : entity work.SpiMaster
@@ -34,7 +35,7 @@ begin
             ARst_i => arst_i, Clk_i => clk_i, SRst_i => '0',
             Freq_i => std_logic_vector(to_unsigned(C_FREQ, 16)),
             En_i   => s_en,
-            Trg_i => trg_i, TxDat_i => x"FF",
+            Trg_i => s_trg, TxDat_i => x"FF",
             RxDat_o => s_rx_dat, RxVld_o => s_rx_vld,
             Busy_o => s_busy,
             Sck_o => sck_o, Miso_i => miso_i, Mosi_o => open, Cs_N_o => cs_n_o);
@@ -42,16 +43,26 @@ begin
     begin
         if arst_i = '1' then
             dv_o <= '0';
+            s_en <= '0';
         elsif rising_edge(clk_i) then
             if trg_i = '1' then
                 s_byte_cnt <= "01";
+                s_trg <= '1';
+                s_en <= '1';
+            else
+                s_trg <= '0';
             end if;
+            
             dv_o <= '0';
             if s_rx_vld = '1' then
                 s_byte_cnt <= s_byte_cnt(0) & '0';
                 s_dat      <= s_dat(7 downto 0) & s_rx_dat;
+                if s_byte_cnt(0) = '1' then
+                    s_trg <= '1';
+                end if;
                 if s_byte_cnt(1) = '1' then
                     dv_o <= '1';
+                    s_en <= '0';
                 end if;
             end if;
         end if;

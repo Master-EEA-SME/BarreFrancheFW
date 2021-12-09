@@ -68,6 +68,7 @@ begin
         if ARst_i = '1' then
             s_BitCnt <= x"01";
             s_RxVld <= '0';
+            Cs_N_o <= '1';
         elsif rising_edge(Clk_i) then
             s_RxVld <= '0';
             if Trg_i = '1' then
@@ -76,17 +77,17 @@ begin
             if s_Transfer = '1' then
                 if s_SckFe = '1' then
                     s_ShiftEn <= '1'; -- Autorisation de faire le decalage de s_TxDat
+                    s_BitCnt <= s_BitCnt(6 downto 0) & '0';
                     if s_ShiftEn = '1' then
                         s_TxDat <= s_TxDat(6 downto 0) & '0';
                     end if;
-                end if;
-                if s_SckRe = '1' then -- On récupère les données sur les front montants
-                    s_RxDat <= s_RxDat(6 downto 0) & s_Miso;
-                    s_BitCnt <= s_BitCnt(6 downto 0) & '0';
                     if s_BitCnt(7) = '1' then
                         s_RxVld <= '1';
                         s_Transfer <= '0';
                     end if;
+                end if;
+                if s_SckRe = '1' then -- On récupère les données sur les front montants
+                    s_RxDat <= s_RxDat(6 downto 0) & s_Miso;
                 end if;
             else
                 s_ShiftEn <= '0';
