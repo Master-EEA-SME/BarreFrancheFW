@@ -6,14 +6,14 @@ entity tb_compass is
 end entity tb_compass;
 
 architecture rtl of tb_compass is
-    constant C_CLK_PER : time := 20 ns;
-    signal s_arst : std_logic;
-    signal s_clk : std_logic;
-    signal s_compass : std_logic;
+    constant C_CLK_PER             : time := 20 ns;
+    signal s_arst                  : std_logic;
+    signal s_clk                   : std_logic;
+    signal s_compass               : std_logic;
     signal s_start_stop, s_continu : std_logic;
 begin
-    
-    p_arst: process
+
+    p_arst : process
     begin
         s_arst <= '1';
         wait for 63 ns;
@@ -21,24 +21,25 @@ begin
         wait;
     end process p_arst;
 
-    p_clk: process
+    p_clk : process
     begin
         s_clk <= '1';
         wait for C_CLK_PER / 2;
         s_clk <= '0';
         wait for C_CLK_PER / 2;
     end process p_clk;
-    
-    p_tb: process
+
+    p_tb : process
     begin
-        s_continu <= '0'; s_start_stop <= '0';
-        wait for 5*C_CLK_PER;
+        s_continu    <= '0';
+        s_start_stop <= '0';
+        wait for 5 * C_CLK_PER;
         s_start_stop <= '1';
-        wait for 100*C_CLK_PER;
+        wait for 100 * C_CLK_PER;
         wait;
     end process p_tb;
 
-    p_compass: process
+    p_compass : process
     begin
         s_compass <= '0';
         wait for 100 ns;
@@ -50,5 +51,14 @@ begin
         end loop;
         wait;
     end process p_compass;
-    
+
+    compass_inst : entity work.compass
+        generic map(
+            C_FREQ_IN => 50e6)
+        port map(
+            arst_i => s_arst, clk_i => s_clk, srst_i => '0',
+            sig_i => s_compass,
+            start_stop_i => s_start_stop, continu_i => s_continu,
+            dat_o => open, dv_o => open
+        );
 end architecture rtl;

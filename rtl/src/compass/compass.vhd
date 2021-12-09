@@ -19,7 +19,7 @@ entity compass is
 end entity compass;
 
 architecture rtl of compass is
-    constant C_1MS_CNT_INCR : unsigned(15 downto 0) := to_unsigned(integer(1000.0 * 2.0**16 / real(C_FREQ_IN)), 16);
+    constant C_1MS_CNT_INCR : unsigned(15 downto 0) := to_unsigned(integer(10000.0 * 2.0**16 / real(C_FREQ_IN)), 16);
     signal s_sig, s_dsig, s_sig_re : std_logic;
     signal s_1ms_cnt               : unsigned(16 downto 0);
     signal s_cnt                   : unsigned(8 downto 0);
@@ -30,7 +30,7 @@ begin
         if arst_i = '1' then
             s_1ms_cnt <= '0' & C_1MS_CNT_INCR;
         elsif rising_edge(clk_i) then
-            if s_running = '1' then
+            if s_running = '1' and s_dsig = '1' then
                 s_1ms_cnt <= ('0' & s_1ms_cnt(15 downto 0)) + ('0' & C_1MS_CNT_INCR);
             else                
                 s_1ms_cnt <= '0' & C_1MS_CNT_INCR;
@@ -69,7 +69,7 @@ begin
             dv_o <= '0';
         elsif rising_edge(clk_i) then
             if s_sig_re = '1' then
-                dat_o <= std_logic_vector(s_cnt);
+                dat_o <= std_logic_vector(s_cnt - 10);
                 dv_o <= '1';
             else
                 dv_o <= '0';
