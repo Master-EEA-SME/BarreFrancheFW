@@ -68,9 +68,9 @@ begin
 
     u_anemometre : entity work.anemometre
         port map (
-            ARst_i => s_arst, Clk_i => s_clk,
-            Anemo_i => s_anemo,
-            StartStop_i => s_start_stop, Continu_i => s_continu,
-            Dat_o => open, Dv_o => open);
+            arst_i => s_arst, clk_i => s_clk,
+            anemo_i => s_anemo,
+            start_stop_i => s_start_stop, continu_i => s_continu,
+            dat_o => open, dv_o => open);
 
 end architecture rtl;

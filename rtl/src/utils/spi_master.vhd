@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity SpiMaster is
+entity spi_master is
     port (
         ARst_i  : in    std_logic;
         Clk_i   : in    std_logic;
@@ -19,9 +19,9 @@ entity SpiMaster is
         Mosi_o  : out   std_logic;
         Cs_N_o  : out   std_logic
     );
-end entity SpiMaster;
+end entity spi_master;
 
-architecture rtl of SpiMaster is
+architecture rtl of spi_master is
     signal s_FreqCnt                : unsigned(16 downto 0); 
     signal s_Transfer               : std_logic;
     signal s_Sck, s_SckRe, s_SckFe  : std_logic;

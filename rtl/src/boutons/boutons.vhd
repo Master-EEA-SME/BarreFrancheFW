@@ -13,9 +13,9 @@ entity boutons is
         btn_babord_n_i  : in std_logic;
         btn_tribord_n_i : in std_logic;
         btn_stby_n_i    : in std_logic;
-        len_babord_o    : out std_logic;
-        len_tribord_o   : out std_logic;
-        len_stby_o      : out std_logic;
+        led_babord_o    : out std_logic;
+        led_tribord_o   : out std_logic;
+        led_stby_o      : out std_logic;
         code_fonction   : out std_logic_vector(3 downto 0)
     );
 end entity boutons;
@@ -102,7 +102,7 @@ begin
             s_cnt_tempo <= '0' & C_CNT_TEMPO_INCR;
         elsif rising_edge(clk_i) then
             if current_st = ST_BABORD_APPUI or current_st = ST_TRIBORD_APPUI then
-                s_cnt_tempo <= ('0' & s_cnt_tempo(31 downto 0)) & ('0' & C_CNT_TEMPO_INCR);
+                s_cnt_tempo <= ('0' & s_cnt_tempo(31 downto 0)) + ('0' & C_CNT_TEMPO_INCR);
             else
                 s_cnt_tempo <= '0' & C_CNT_TEMPO_INCR;
             end if;
@@ -116,7 +116,7 @@ begin
             s_cnt_tempo_bip <= '0' & C_CNT_TEMPO_BIP_INCR;
         elsif rising_edge(clk_i) then
             if current_st = ST_BABORD_APPUI or current_st = ST_TRIBORD_APPUI then
-                s_cnt_tempo_bip <= ('0' & s_cnt_tempo_bip(31 downto 0)) & ('0' & C_CNT_TEMPO_BIP_INCR);
+                s_cnt_tempo_bip <= ('0' & s_cnt_tempo_bip(31 downto 0)) + ('0' & C_CNT_TEMPO_BIP_INCR);
             else
                 s_cnt_tempo_bip <= '0' & C_CNT_TEMPO_INCR;
             end if;
@@ -133,4 +133,9 @@ begin
         '1' when (current_st = ST_BABORD_1 or current_st = ST_TRIBORD_1) and s_bip_cnt(0) = '1' and s_cnt_tempo_bip(s_cnt_tempo_bip'left) = '1' else
         '1' when (current_st = ST_BABORD_10 or current_st = ST_TRIBORD_10) and s_bip_cnt(1) = '1' and s_cnt_tempo_bip(s_cnt_tempo_bip'left) = '1' else
         '0';
+
+    led_babord_o <= '0';
+    led_tribord_o <= '0';
+    led_stby_o <= '0';
+
 end architecture rtl;

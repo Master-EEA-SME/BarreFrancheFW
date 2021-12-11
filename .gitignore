@@ -8,4 +8,9 @@
 !img/*
 !Makefile
 !*.mpf
+!*_hw.tcl
+!*.qsys
 !*/
+*_inst.vhd
+synthesis
+db

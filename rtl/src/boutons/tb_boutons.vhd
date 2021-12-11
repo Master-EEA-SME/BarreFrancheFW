@@ -62,7 +62,7 @@ begin
         port map (
             arst_i => s_arst, clk_i => s_clk, srst_i => '0',
             btn_babord_n_i => s_babord_n, btn_tribord_n_i => s_tribord_n, btn_stby_n_i => s_stby_n,
-            len_babord_o => open, len_tribord_o => open, len_stby_o => open,
+            led_babord_o => open, led_tribord_o => open, led_stby_o => open,
             code_fonction => open);
     s_babord_n <= not s_babord;
     s_tribord_n <= not s_tribord;

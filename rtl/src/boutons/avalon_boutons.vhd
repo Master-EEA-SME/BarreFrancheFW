@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.utils.all;
+
 entity avalon_boutons is
     port (
         arst_i          : in std_logic;
@@ -9,9 +11,9 @@ entity avalon_boutons is
         btn_babord_n_i  : in std_logic;
         btn_tribord_n_i : in std_logic;
         btn_stby_n_i    : in std_logic;
-        len_babord_o    : out std_logic;
-        len_tribord_o   : out std_logic;
-        len_stby_o      : out std_logic;
+        led_babord_o    : out std_logic;
+        led_tribord_o   : out std_logic;
+        led_stby_o      : out std_logic;
         write_i         : in std_logic;
         write_data_i    : in std_logic_vector(31 downto 0);
         read_i          : in std_logic;
@@ -37,7 +39,7 @@ begin
 
     read_data_o <= x"0000000" & s_code_fonction;
 
-    boutons_inst : entity work.boutons
+    u_ihm : boutons
         generic map(
             C_FREQ_IN => 50e6)
         port map(
@@ -47,9 +49,9 @@ begin
             btn_babord_n_i  => btn_babord_n_i,
             btn_tribord_n_i => btn_tribord_n_i,
             btn_stby_n_i    => btn_stby_n_i,
-            len_babord_o    => len_babord_o,
-            len_tribord_o   => len_tribord_o,
-            len_stby_o      => len_stby_o,
+            led_babord_o    => led_babord_o,
+            led_tribord_o   => led_tribord_o,
+            led_stby_o      => led_stby_o,
             code_fonction   => s_code_fonction
         );
 

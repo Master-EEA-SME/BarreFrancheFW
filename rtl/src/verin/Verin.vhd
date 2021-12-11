@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.utils.all;
+
 entity verin is
     generic (
         C_FREQ_IN  : integer := 50_000_000;
@@ -44,12 +46,12 @@ begin
             Q => pwm_o);
     -- Gestion butées
     s_pwm_en <=
-        '0' when unsigned(s_adc_dat) >= unsigned(butee_d_i) and sens_i = '1' else
-        '0' when unsigned(s_adc_dat) <= unsigned(butee_d_i) and sens_i = '0' else
+        '0' when unsigned(s_adc_dat) > unsigned(butee_d_i) and sens_i = '1' else
+        '0' when unsigned(s_adc_dat) < unsigned(butee_g_i) and sens_i = '0' else
         pwm_en_i;
     sens_o <= sens_i;
     -- Gestion ADC
-    u_mcp3201 : entity work.mcp3201
+    u_mcp3201 : mcp3201
         generic map(
             C_FREQ_IN => C_FREQ_IN, C_FREQ_SCK => C_FREQ_SCK)
         port map(
@@ -57,32 +59,13 @@ begin
             trg_i => s_adc_trg, dat_o => s_adc_dat, dv_o => s_adc_dv,
             sck_o => sck_o, miso_i => miso_i, cs_n_o => cs_n_o);
 
-    --    process (clk_i, arst_i)
-    --    begin
-    --        if arst_i = '1' then
-    --            s_adc_cooldown_cnt <= (others => '0');
-    --            s_adc_on_cooldown  <= '0';
-    --        elsif rising_edge(clk_i) then
-    --            if s_adc_dv = '1' then
-    --                s_adc_on_cooldown  <= '1';
-    --                s_adc_cooldown_cnt <= (others => '0');
-    --            end if;
-    --            if s_adc_on_cooldown = '1' then
-    --                s_adc_cooldown_cnt <= s_adc_cooldown_cnt + 1;
-    --                if s_adc_cooldown_cnt(s_adc_cooldown_cnt'left) = '1' then
-    --                    s_adc_on_cooldown <= '0';
-    --                end if;
-    --            end if;
-    --        end if;
-    --    end process;
-
     process (clk_i, arst_i)
     begin
         if arst_i = '1' then
             s_cnt_100ms(31 downto 0) <= (others => '1');
             s_cnt_100ms(32)          <= '0';
         elsif rising_edge(clk_i) then
-            s_cnt_100ms <= ('0' & s_cnt_100ms(31 downto 0)) & ('0' & C_CNT_100MS_INCR);
+            s_cnt_100ms <= ('0' & s_cnt_100ms(31 downto 0)) + ('0' & C_CNT_100MS_INCR);
         end if;
     end process;
     s_adc_trg     <= s_cnt_100ms(32);

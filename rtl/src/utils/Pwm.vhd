@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity Pwm is
+entity pwm is
     generic (
         N : integer := 16
     );
@@ -14,9 +14,9 @@ entity Pwm is
         Freq_i  : in    std_logic_vector(N - 1 downto 0);
         Q       : out   std_logic
     );
-end entity Pwm;
+end entity pwm;
 
-architecture rtl of Pwm is
+architecture rtl of pwm is
     signal s_FreqCnt    : unsigned(N downto 0);
     signal s_Q          : std_logic;
 begin

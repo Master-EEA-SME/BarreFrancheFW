@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.utils.all;
+
 entity mcp3201 is
     generic (
         C_FREQ_IN  : integer := 50_000_000;
@@ -30,7 +32,7 @@ architecture rtl of mcp3201 is
     signal s_acquiring : std_logic;
 begin
 
-    u_spi_master : entity work.SpiMaster
+    u_spi_master : spi_master
         port map(
             ARst_i => arst_i, Clk_i => clk_i, SRst_i => '0',
             Freq_i => std_logic_vector(to_unsigned(C_FREQ, 16)),

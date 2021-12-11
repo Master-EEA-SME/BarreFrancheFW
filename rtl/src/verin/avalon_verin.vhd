@@ -2,20 +2,23 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.utils.all;
+
 entity avalon_verin is
     port (
-        arst_i       : in std_logic;
-        clk_i        : in std_logic;
-        address_i    : in std_logic_vector(2 downto 0);
-        write_i      : in std_logic;
-        write_data_i : in std_logic_vector(31 downto 0);
-        read_i       : in std_logic;
-        read_data_o  : out std_logic_vector(31 downto 0);
-        sck_o        : out std_logic;
-        miso_i       : in std_logic;
-        cs_n_o       : out std_logic;
-        pwm_o        : out std_logic;
-        sens_o       : out std_logic
+        arst_i        : in std_logic;
+        clk_i         : in std_logic;
+        address_i     : in std_logic_vector(2 downto 0);
+        byte_enable_i : in std_logic_vector(3 downto 0);
+        write_i       : in std_logic;
+        write_data_i  : in std_logic_vector(31 downto 0);
+        read_i        : in std_logic;
+        read_data_o   : out std_logic_vector(31 downto 0);
+        sck_o         : out std_logic;
+        miso_i        : in std_logic;
+        cs_n_o        : out std_logic;
+        pwm_o         : out std_logic;
+        sens_o        : out std_logic
     );
 end entity avalon_verin;
 
@@ -46,8 +49,12 @@ begin
                     when 3 =>
                         s_butee_d <= write_data_i(15 downto 0);
                     when 4 =>
-                        s_en_pwm <= write_data_i(0);
-                        s_sens   <= write_data_i(0);
+                        if byte_enable_i(0) = '1' then
+                            s_en_pwm <= write_data_i(0);
+                        end if;
+                        if byte_enable_i(2) = '1' then
+                            s_sens <= write_data_i(16);
+                        end if;
                     when others =>
                 end case;
             end if;
@@ -61,7 +68,7 @@ begin
         x"0000000" & s_fin_course_g & s_fin_course_d & s_sens & s_en_pwm when to_integer(unsigned(address_i)) = 4 else
         x"00000" & s_angle_barre when to_integer(unsigned(address_i)) = 5 else
         (others => '0');
-    u_verin : entity work.verin
+    u_verin : verin
         generic map(
             C_FREQ_IN  => 50e6,
             C_FREQ_SCK => 1e6)

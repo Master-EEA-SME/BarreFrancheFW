@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.utils.all;
+
 entity avalon_anemometre is
     port (
         arst_i       : in std_logic;
@@ -32,11 +34,13 @@ begin
         end if;
     end process p_write;
 
-    read_data_o <= x"00000" & "000" & s_dv & s_dat_anemo;
+    read_data_o <= x"00000" & "00" & s_dv & s_dat_anemo;
 
-    u_anemometre : entity work.Anemometre
+    u_anemometre : anemometre
+        generic map (
+            C_FREQ_IN => 50_000_000)
         port map(
-            ARst_i => arst_i, Clk_i => clk_i,
-            Anemo_i => anemo_i, StartStop_i => s_start_stop, Continu_i => s_continu,
-            Dat_o => s_dat_anemo, Dv_o => s_dv);
+            arst_i => arst_i, clk_i => clk_i,
+            anemo_i => anemo_i, start_stop_i => s_start_stop, continu_i => s_continu,
+            dat_o => s_dat_anemo, dv_o => s_dv);
 end architecture rtl;

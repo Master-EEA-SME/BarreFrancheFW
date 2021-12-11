@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.utils.all;
+
 entity avalon_compass is
     port (
         arst_i       : in std_logic;
@@ -34,7 +36,7 @@ begin
 
     read_data_o <= x"00000" & "00" & s_dv & s_dat_compass;
 
-    compass_inst : entity work.compass
+    u_compass : compass
         generic map(
             C_FREQ_IN => 50e6)
         port map(
