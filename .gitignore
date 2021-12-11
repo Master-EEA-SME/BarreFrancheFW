@@ -10,7 +10,10 @@
 !*.mpf
 !*_hw.tcl
 !*.qsys
+!*.c
+!*.h
 !*/
 *_inst.vhd
 synthesis
 db
+*_bsp
